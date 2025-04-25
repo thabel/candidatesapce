@@ -9,9 +9,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { User, GraduationCap, Briefcase, Code, Award, Languages, Download } from "lucide-react"
-import {cvPdfPage, Quixote} from "@/app/test/Quiosque";
 import {pdf} from "@react-pdf/renderer";
 import { saveAs } from 'file-saver';
+import CVDocument from "@/app/test/CvDocument";
+import {cvData} from "@/lib/utils";
 
 
 
@@ -27,7 +28,7 @@ export default function CreateCvForm() {
     }
     const downloadPdf = async () => {
         const fileName = 'test.pdf';
-        const blob = await pdf(<cvPdfPage />).toBlob();
+        const blob = await pdf(<CVDocument data={cvData} />).toBlob();
         saveAs(blob, fileName);
     };
 

@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import {
     User,
     Mail,
@@ -10,6 +10,8 @@ import {
     Calendar,
     Building,
     ExternalLink,
+    Heart,
+    Globe,
 } from "lucide-react"
 
 export default function CVRender() {
@@ -48,6 +50,20 @@ export default function CVRender() {
             "MongoDB",
             "PostgreSQL",
             "System Design",
+        ],
+        softSkills: [
+            "Team Leadership",
+            "Communication",
+            "Problem Solving",
+            "Adaptability",
+            "Time Management",
+            "Conflict Resolution",
+            "Mentoring",
+            "Critical Thinking",
+        ],
+        languages: [
+            { name: "English", proficiency: "Native" },
+            { name: "German", proficiency: "Basic" },
         ],
         experience: [
             {
@@ -91,17 +107,18 @@ export default function CVRender() {
     return (
         <div className="bg-white rounded-xl shadow-lg overflow-hidden max-w-4xl mx-auto">
             {/* Header */}
-            <div className="text-white px-8 py-6" style={
-                {
+            <div
+                className="text-white px-8 py-6"
+                style={{
                     background: "linear-gradient(to right, #64748b, #1e293b)", // slate-500 to slate-800
                     color: "white",
                     padding: "1.5rem 2rem", // Tailwind's py-6 px-8
-                }
-            }>
+                }}
+            >
                 <h1 className="text-3xl font-bold tracking-tight">{data.fullName}</h1>
                 <p className="text-lg text-slate-200 mt-1">{data.jobTitle}</p>
 
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 mt-4 text-sm">
+                <div className="grid grid-cols-1 2xl:grid-cols-3 gap-3 mt-4 text-sm">
                     <div className="flex items-center gap-2">
                         <Mail className="h-4 w-4 text-slate-300" />
                         <span>{data.email}</span>
@@ -207,6 +224,46 @@ export default function CVRender() {
                                 >
                   {skill}
                 </span>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* Soft Skills Section */}
+                <section>
+                    <div className="flex items-center gap-2 mb-4">
+                        <Heart className="h-5 w-5 text-slate-700" />
+                        <h2 className="text-xl font-bold text-slate-800">Soft Skills</h2>
+                    </div>
+
+                    <div className="pl-7">
+                        <div className="flex flex-wrap gap-2">
+                            {data.softSkills?.map((skill, index) => (
+                                <span
+                                    key={index}
+                                    className="px-3 py-1.5 bg-pink-50 text-slate-700 rounded-md text-sm font-medium hover:bg-pink-100 transition-colors"
+                                >
+                  {skill}
+                </span>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* Languages Section */}
+                <section>
+                    <div className="flex items-center gap-2 mb-4">
+                        <Globe className="h-5 w-5 text-slate-700" />
+                        <h2 className="text-xl font-bold text-slate-800">Languages</h2>
+                    </div>
+
+                    <div className="pl-7">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {data.languages?.map((language, index) => (
+                                <div key={index} className="flex items-center justify-between">
+                                    <span className="font-medium text-slate-700">{language.name}</span>
+                                    <span className="text-sm bg-slate-100 px-2 py-1 rounded text-slate-600">{language.proficiency}</span>
+                                </div>
                             ))}
                         </div>
                     </div>
