@@ -5,9 +5,9 @@ import CreateCvForm from "@/components/ui/createCvForm";
 import CVRender from "@/components/ui/RenderCV";
 import Footer from "@/components/ui/Footer";
 import {CVData} from "@/lib/utils";
-import {Resume} from "@/components/Resume";
-import {Provider} from "react-redux";
-import {store} from "@/lib/redux/store";
+
+// here implement database query to get the data from the database and set it to the state
+// TODO: implement database query to get the data from the database and set it to the state
 
 export default function CreateCV() {
     const [data, setData] = useState<CVData>(
@@ -53,20 +53,14 @@ export default function CreateCV() {
             },
         ],
     })
-   return (
-  <Provider store={store}>
-    <div className="grid grid-cols-2 gap-8 h-screen mx-10 my-6">
-      {/* Scrollable Form */}
-      <div className="overflow-y-scroll pr-4">
-        <CreateCvForm initialData={data} setData={setData} />
-      </div>
-
-      {/* Fixed Resume Preview */}
-      <div className="sticky top-6 ">
-        <Resume />
-      </div>
-    </div>
-  </Provider>
-);
-
+    return (
+        <Fragment>
+            <TopHeader/>
+            <div className="grid grid-cols-2 mx-10 my-6 gap-8">
+                <CreateCvForm initialData={data} setData={setData}></CreateCvForm>
+                <CVRender data={data}></CVRender>
+            </div>
+            <Footer/>
+        </Fragment>
+    )
 }

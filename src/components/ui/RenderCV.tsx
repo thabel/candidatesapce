@@ -1,4 +1,5 @@
 "use client"
+import { CVData } from "@/lib/utils"
 import {
     User,
     Mail,
@@ -14,11 +15,11 @@ import {
     Globe,
 } from "lucide-react"
 
-export default function CVRender({data}) {
+export default function CVRender({data}:{data:CVData}) {
 
 
     return (
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden max-w-4xl mx-auto">
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden max-w-4xl mx-auto ">
             {/* Header */}
             <div
                 className="text-white px-8 py-6"

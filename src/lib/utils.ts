@@ -110,6 +110,7 @@ const cvData:CVData = {
 };
 export {cvData};
 
+
 export interface CVData {
   fullName: string
   jobTitle: string
@@ -129,6 +130,24 @@ export interface CVData {
     name: string
     proficiency: string
   }[]
+  experience: {
+    company: string
+    role: string
+    duration: string
+    description: string
+    achievements?: string[]
+  }[]
+  certifications?: {
+    name: string
+    issuer: string
+    year: string
+  }[]
+}
+export  interface CleanCV{
+  summary: string,
+  jobTitle: string,
+  skills: string[]
+  softSkills: string[]
   experience: {
     company: string
     role: string

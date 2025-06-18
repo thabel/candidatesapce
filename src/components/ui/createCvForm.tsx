@@ -1,7 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import type React from "react"
+import React, { useState, FormEvent,useEffect } from 'react'
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
@@ -14,6 +13,10 @@ import { saveAs } from "file-saver"
 import CVDocument from "@/app/test/CvDocument"
 import type { CVData } from "@/lib/utils"
 import { MultiSelect } from "@/components/ui/multi-select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useAppDispatch } from '@/lib/redux/hooks'
+import {resumeSlice} from "@/lib/redux/resumeSlice";
+import { fakeResume } from '@/lib/constants'
 
 // Common skill suggestions
 const TECHNICAL_SKILL_SUGGESTIONS = [
@@ -82,54 +85,64 @@ const SOFT_SKILL_SUGGESTIONS = [
   "Empathy",
 ]
 
+const LANGUAGE_PROFICIENCY_LEVELS = [
+  { value: "Basic", label: "Basic" },
+  { value: "Intermediate", label: "Intermediate" },
+  { value: "Fluent/Native", label: "Fluent/Native" },
+]
+
 interface CreateCvFormProps {
   initialData?: CVData
   setData?: React.Dispatch<React.SetStateAction<CVData>>
 }
+const defaultData: CVData = {
+  fullName: "",
+  jobTitle: "",
+  email: "",
+  phone: "",
+  location: "",
+  summary: "",
+  education: [
+    {
+      school: "",
+      degree: "",
+      year: "",
+      achievements: "",
+    },
+  ],
+  skills: [],
+  softSkills: [],
+  languages: [
+    {
+      name: "",
+      proficiency: "",
+    },
+  ],
+  experience: [
+    {
+      company: "",
+      role: "",
+      duration: "",
+      description: "",
+      achievements: [],
+    },
+  ],
+  certifications: [
+    {
+      name: "",
+      issuer: "",
+      year: "",
+    },
+  ],
+}
 
 export default function CreateCvForm({ initialData, setData }: CreateCvFormProps) {
-  // Initialize state with either provided data or default values
-  const defaultData: CVData = {
-    fullName: "",
-    jobTitle: "",
-    email: "",
-    phone: "",
-    location: "",
-    summary: "",
-    education: [
-      {
-        school: "",
-        degree: "",
-        year: "",
-        achievements: "",
-      },
-    ],
-    skills: [],
-    softSkills: [],
-    languages: [
-      {
-        name: "",
-        proficiency: "",
-      },
-    ],
-    experience: [
-      {
-        company: "",
-        role: "",
-        duration: "",
-        description: "",
-        achievements: [],
-      },
-    ],
-    certifications: [
-      {
-        name: "",
-        issuer: "",
-        year: "",
-      },
-    ],
-  }
+  // this sould use redux , stores from the previous
+  const dispatch = useAppDispatch();
+  dispatch(resumeSlice.actions.setResume(fakeResume));
 
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState<CVData>(initialData || defaultData)
 
   // Update parent component state whenever form data changes
@@ -215,10 +228,34 @@ export default function CreateCvForm({ initialData, setData }: CreateCvFormProps
     handleArrayItemChange("experience", index, "achievements", achievementsArray)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Form submitted:", formData)
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setIsLoading(true)
+    setError(null) // Clear previous errors when a new request starts
+
+    try {
+      const formData = new FormData(event.currentTarget)
+      const response = await fetch('/api/submit', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to submit the data. Please try again.')
+      }
+
+      // Handle response if necessary
+      //const data = await response.json()
+      // ...
+    } catch (error) {
+      // Capture the error message to display to the user
+      setError(error)
+      console.error(error)
+    } finally {
+      setIsLoading(false)
+    }
   }
+
 
   const downloadPdf = async () => {
     const fileName = `${formData.fullName.replace(/\s+/g, "_") || "cv"}_CV.pdf`
@@ -227,7 +264,7 @@ export default function CreateCvForm({ initialData, setData }: CreateCvFormProps
   }
 
   return (
-    <form onSubmit={handleSubmit} className="overflow-y-auto max-h-screen pb-8 pr-4">
+    <form onSubmit={onSubmit} className="overflow-y-auto  pb-8 pr-4">
       <Accordion type="single" collapsible className="w-full space-y-4" defaultValue="personal">
         {/* Personal Information Section */}
         <AccordionItem value="personal" className="border rounded-lg shadow-sm">
@@ -469,7 +506,7 @@ export default function CreateCvForm({ initialData, setData }: CreateCvFormProps
                 onChange={(skills) => handleSkillsChange(skills, "skills")}
                 placeholder="Type to search or select a technical skill..."
                 suggestions={TECHNICAL_SKILL_SUGGESTIONS}
-                tagClassName="bg-slate-100 text-slate-700 border border-slate-200 h-8"
+                tagClassName="bg-slate-100 text-slate-700 border border-slate-200"
                 maxSuggestions={15}
               />
               <p className="text-sm text-slate-500">
@@ -609,12 +646,21 @@ export default function CreateCvForm({ initialData, setData }: CreateCvFormProps
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor={`proficiency-${index}`}>Proficiency</Label>
-                    <Input
-                      id={`proficiency-${index}`}
-                      placeholder="Native"
+                    <Select
                       value={lang.proficiency}
-                      onChange={(e) => handleArrayItemChange("languages", index, "proficiency", e.target.value)}
-                    />
+                      onValueChange={(value) => handleArrayItemChange("languages", index, "proficiency", value)}
+                    >
+                      <SelectTrigger id={`proficiency-${index}`} className="w-full">
+                        <SelectValue placeholder="Select proficiency level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {LANGUAGE_PROFICIENCY_LEVELS.map((level) => (
+                          <SelectItem key={level.value} value={level.value}>
+                            {level.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
                 {index < formData.languages.length - 1 && <hr className="my-4" />}
@@ -634,8 +680,8 @@ export default function CreateCvForm({ initialData, setData }: CreateCvFormProps
       </Accordion>
 
       <div className="mt-8 flex justify-end gap-4">
-        <Button type="button" variant="outline">
-          Save Draft
+        <Button variant="outline" type="submit" disabled={isLoading} >
+          {isLoading ? 'Loading...' : 'Submit'}
         </Button>
         <Button type="button" className="gap-2" onClick={downloadPdf}>
           <Download className="h-4 w-4" />
