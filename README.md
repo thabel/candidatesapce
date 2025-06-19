@@ -37,6 +37,11 @@ Many job seekers struggle to tailor their CVs to match each job offer. This proj
 - React PDF
 - Redux
 
+## Screenshots
+
+![CV Generation Page](project.png) 
+
+*Note: Replace the `screenshots/*.png` paths with your actual image files.*
 ## Contributing
 Contributions are welcome!  
 Feel free to open an issue or submit a pull request.
